@@ -151,13 +151,20 @@
                         </div>
                     </div>
 
-                    <!-- NEW GOAL SECTION -->
+                    <!-- PENSION GAP SECTION -->
                     <div class="space-y-6 bg-[var(--card-bg)] p-6 rounded-xl">
                         <h2 class="text-2xl font-semibold text-white border-b border-[var(--border-color)] pb-2">Pensjonsgap</h2>
                         <div id="gap-calculation-output">
                             <div id="goal-met-message" class="hidden text-center text-lg font-semibold text-[var(--success-green)] py-8">
                                 Gratulerer, du har allerede nådd pensjonsmålet ditt!
                             </div>
+                            
+                            <!-- NEW GAP SUMMARY FIELD -->
+                            <div id="pension-gap-summary" class="hidden bg-slate-800/60 p-4 rounded-lg text-center mb-6">
+                                <div class="output-label">Ditt årlige pensjonsgap</div>
+                                <div id="pension-gap-details" class="text-xl font-bold text-[var(--accent-blue-light)] mt-1">0,0 % (0 kr / år)</div>
+                            </div>
+
                             <div id="goal-results" class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
                                 <div class="bg-slate-900/80 p-6 rounded-lg flex flex-col justify-center">
                                     <div id="lump-sum-today" class="output-value">0 kr</div>
@@ -185,7 +192,7 @@
             { id: 'currentSalary', label: 'Dagens årslønn', type: 'range', min: 0, max: 5000000, step: 10000, value: 600000, unit: 'kr' },
             { id: 'currentOTPSaldo', label: 'OTP Saldo i dag', type: 'range', min: 0, max: 3000000, step: 10000, value: 500000, unit: 'kr' },
             { id: 'otpRate', label: 'OTP-sats', type: 'range', min: 2, max: 7, step: 0.1, value: 5, unit: '%' },
-            { id: 'expectedReturn', label: 'Forventet årlig avkastning', type: 'range', min: 0, max: 15, step: 0.1, value: 5.7, unit: '%' },
+            { id: 'expectedReturn', label: 'Forventet årlig avkastning', type: 'range', min: 0, max: 15, step: 0.1, value: 8.0, unit: '%' },
             { id: 'payoutYears', label: 'Utbetalingsperiode OTP', type: 'range', min: 10, max: 30, step: 1, value: 15, unit: 'år' },
             { id: 'cpiRate', label: 'Forventet årlig KPI', type: 'range', min: 0, max: 10, step: 0.1, value: 2.5, unit: '%' },
             { id: 'socialSecurityEstimate', label: 'Årlig utbetaling Folketrygden (fra norskpensjon.no)', type: 'range', min: 150000, max: 500000, step: 5000, value: 250000, unit: 'kr' },
@@ -312,19 +319,24 @@
             const annualPensionGap = desiredAnnualPension - totalAnnualPension;
 
             const goalMetMessage = document.getElementById('goal-met-message');
+            const pensionGapSummary = document.getElementById('pension-gap-summary');
             const goalResults = document.getElementById('goal-results');
             const goalExplainer = document.getElementById('goal-explainer');
 
             if (annualPensionGap <= 0) {
                 goalMetMessage.classList.remove('hidden');
+                pensionGapSummary.classList.add('hidden');
                 goalResults.classList.add('hidden');
                 goalExplainer.classList.add('hidden');
             } else {
                 goalMetMessage.classList.add('hidden');
+                pensionGapSummary.classList.remove('hidden');
                 goalResults.classList.remove('hidden');
                 goalExplainer.classList.remove('hidden');
 
-                // How much extra capital is needed at retirement to fund the gap? (PV of an annuity)
+                const percentageGap = values.desiredPensionLevel - pensionPercentage;
+                document.getElementById('pension-gap-details').textContent = `${formatPercent(percentageGap)} (${formatCurrency(annualPensionGap)} / år)`;
+
                 let requiredCapitalAtRetirement = 0;
                 if (r > 0) {
                     requiredCapitalAtRetirement = annualPensionGap * ((1 - Math.pow(1 + r, -n_payout)) / r);
@@ -332,10 +344,8 @@
                     requiredCapitalAtRetirement = annualPensionGap * n_payout;
                 }
                 
-                // What is that capital worth today? (PV of a lump sum)
                 const lumpSumToday = requiredCapitalAtRetirement / Math.pow(1 + r, n);
 
-                // Alternatively, what monthly saving is needed? (PMT for a future value)
                 let annualSavingNeeded = 0;
                 if (r > 0) {
                      annualSavingNeeded = requiredCapitalAtRetirement / ((Math.pow(1 + r, n) - 1) / r);
