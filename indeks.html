@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pensjonsdashboard</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts for a nice typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Söderberg & Partners inspired theme - Updated with mixed blues */
+        :root {
+            --dark-blue: #0B1B34;
+            --accent-blue-light: #89CFF0; 
+            --accent-blue-vibrant: #00A9E0; 
+            --card-bg: #122642; 
+            --light-text: #E5E7EB;
+            --medium-text: #94A3B8;
+            --border-color: #1E3A5F;
+            --success-green: #4ade80;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-blue);
+            color: var(--light-text);
+        }
+        /* Custom styles for sliders */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 5px;
+            outline: none;
+            transition: background 0.3s;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--accent-blue-light);
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid var(--dark-blue);
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--accent-blue-light);
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid var(--dark-blue);
+        }
+        /* Style for number input */
+         input[type="number"]::-webkit-inner-spin-button, 
+         input[type="number"]::-webkit-outer-spin-button { 
+          -webkit-appearance: none; 
+          margin: 0; 
+        }
+        input[type="number"] {
+          -moz-appearance: textfield;
+        }
+        .output-value {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 700;
+            color: var(--accent-blue-vibrant);
+            word-break: break-all; /* Ensure long numbers wrap if absolutely necessary */
+        }
+        .output-label {
+            font-size: 1rem; /* text-base */
+            color: var(--medium-text);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="relative min-h-screen flex flex-col items-center justify-center p-4">
+        <div class="w-full max-w-6xl mx-auto bg-slate-900/70 backdrop-blur-sm rounded-2xl shadow-2xl p-6 md:p-10">
+            
+            <header class="text-center mb-8">
+                <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">Pensjonsdashboard</h1>
+                <p class="text-slate-400">Estimer din fremtidige pensjon interaktivt</p>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <!-- Input Section -->
+                <div class="lg:col-span-2 space-y-6 bg-[var(--card-bg)] p-6 rounded-xl">
+                    <h2 class="text-2xl font-semibold text-white border-b border-[var(--border-color)] pb-2">Input</h2>
+                    <div id="input-container" class="space-y-5"></div>
+                </div>
+
+                <!-- Output Section -->
+                <div class="lg:col-span-3 flex flex-col gap-8">
+                    <div class="space-y-6 bg-[var(--card-bg)] p-6 rounded-xl">
+                        <div>
+                           <h2 class="text-2xl font-semibold text-white border-b border-[var(--border-color)] pb-2 mb-6">Resultater</h2>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
+                                <div class="bg-slate-900/80 p-6 rounded-lg flex flex-col justify-center">
+                                    <div id="total-annual-pension" class="output-value">0 kr</div>
+                                    <div class="output-label mt-2">Årlig pensjon (estimat)</div>
+                                </div>
+                                <div class="bg-slate-900/80 p-6 rounded-lg flex flex-col justify-center">
+                                    <div id="pension-percentage" class="output-value">0 %</div>
+                                    <div class="output-label mt-2">% av sluttlønn</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 space-y-4">
+                            <h3 class="text-xl font-medium text-white">Detaljert oversikt</h3>
+                            <div class="bg-slate-900/80 p-4 rounded-lg space-y-3">
+                                <div class="flex justify-between items-center text-slate-300">
+                                    <span>År til pensjonsalder:</span>
+                                    <span id="years-to-retirement" class="font-semibold text-white">0</span>
+                                </div>
+                                <hr class="border-[var(--border-color)]">
+                                <div class="flex justify-between items-center text-slate-300">
+                                    <span>Sluttlønn (estimat):</span>
+                                    <span id="future-salary" class="font-semibold text-white">0 kr</span>
+                                </div>
+                                 <hr class="border-[var(--border-color)]">
+                                <div class="flex justify-between items-center text-slate-300">
+                                    <span>Årlig sparing (OTP) i dag:</span>
+                                    <span id="annual-otp-saving" class="font-semibold text-white">0 kr</span>
+                                </div>
+                                 <hr class="border-[var(--border-color)]">
+                                <div class="flex justify-between items-center text-slate-300">
+                                    <span>OTP saldo ved pensjon:</span>
+                                    <span id="future-otp-balance" class="font-semibold text-white">0 kr</span>
+                                </div>
+                                 <hr class="border-[var(--border-color)]">
+                                 <div class="flex justify-between items-center text-slate-300">
+                                    <span>Årlig utbetaling fra OTP:</span>
+                                    <span id="annual-otp-payout" class="font-semibold text-white">0 kr</span>
+                                </div>
+                                <hr class="border-[var(--border-color)]">
+                                <div class="flex justify-between items-center text-slate-300">
+                                    <span>Årlig utbetaling fra Folketrygden:</span>
+                                    <span id="future-social-security" class="font-semibold text-white">0 kr</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NEW GOAL SECTION -->
+                    <div class="space-y-6 bg-[var(--card-bg)] p-6 rounded-xl">
+                        <h2 class="text-2xl font-semibold text-white border-b border-[var(--border-color)] pb-2">Pensjonsgap</h2>
+                        <div id="gap-calculation-output">
+                            <div id="goal-met-message" class="hidden text-center text-lg font-semibold text-[var(--success-green)] py-8">
+                                Gratulerer, du har allerede nådd pensjonsmålet ditt!
+                            </div>
+                            <div id="goal-results" class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
+                                <div class="bg-slate-900/80 p-6 rounded-lg flex flex-col justify-center">
+                                    <div id="lump-sum-today" class="output-value">0 kr</div>
+                                    <div class="output-label mt-2">Nødvendig engangsinnskudd i dag</div>
+                                </div>
+                                <div class="bg-slate-900/80 p-6 rounded-lg flex flex-col justify-center">
+                                    <div id="monthly-saving-needed" class="output-value">0 kr</div>
+                                    <div class="output-label mt-2">Alternativ månedlig sparing</div>
+                                </div>
+                            </div>
+                            <p id="goal-explainer" class="text-center text-sm text-slate-500 mt-4">Beregningen forutsetter at ekstra sparing får samme avkastning som oppgitt.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION FOR INPUT FIELDS ---
+        const inputsConfig = [
+            { id: 'age', label: 'Din alder', type: 'range', min: 18, max: 70, step: 1, value: 35, unit: 'år' },
+            { id: 'retirementAge', label: 'Pensjonsalder', type: 'range', min: 62, max: 75, step: 1, value: 67, unit: 'år' },
+            { id: 'grunnbelop', label: 'Grunnbeløp (1G)', type: 'number', value: 124028, unit: 'kr' },
+            { id: 'currentSalary', label: 'Dagens årslønn', type: 'range', min: 0, max: 5000000, step: 10000, value: 600000, unit: 'kr' },
+            { id: 'currentOTPSaldo', label: 'OTP Saldo i dag', type: 'range', min: 0, max: 3000000, step: 10000, value: 500000, unit: 'kr' },
+            { id: 'otpRate', label: 'OTP-sats', type: 'range', min: 2, max: 7, step: 0.1, value: 5, unit: '%' },
+            { id: 'expectedReturn', label: 'Forventet årlig avkastning', type: 'range', min: 0, max: 15, step: 0.1, value: 5.7, unit: '%' },
+            { id: 'payoutYears', label: 'Utbetalingsperiode OTP', type: 'range', min: 10, max: 30, step: 1, value: 15, unit: 'år' },
+            { id: 'cpiRate', label: 'Forventet årlig KPI', type: 'range', min: 0, max: 10, step: 0.1, value: 2.5, unit: '%' },
+            { id: 'socialSecurityEstimate', label: 'Årlig utbetaling Folketrygden (fra norskpensjon.no)', type: 'range', min: 150000, max: 500000, step: 5000, value: 250000, unit: 'kr' },
+            { id: 'desiredPensionLevel', label: 'Ønsket pensjonsnivå', type: 'range', min: 40, max: 100, step: 1, value: 80, unit: '%' }
+        ];
+
+        const inputContainer = document.getElementById('input-container');
+
+        // --- DYNAMICALLY CREATE INPUT FIELDS ---
+        inputsConfig.forEach(config => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'input-group';
+            
+            const label = document.createElement('label');
+            label.htmlFor = config.id;
+            label.className = 'text-sm font-medium text-slate-300';
+            label.textContent = config.label;
+            
+            const input = document.createElement('input');
+            input.id = config.id;
+            input.type = config.type;
+            input.value = config.value;
+
+            if (config.type === 'range') {
+                const labelWrapper = document.createElement('div');
+                labelWrapper.className = 'flex justify-between items-baseline mb-2';
+                const valueSpan = document.createElement('span');
+                valueSpan.id = `${config.id}-value`;
+                valueSpan.className = 'text-base font-semibold text-[var(--accent-blue-light)]';
+                labelWrapper.appendChild(label);
+                labelWrapper.appendChild(valueSpan);
+                wrapper.appendChild(labelWrapper);
+                input.className = 'w-full';
+                input.min = config.min;
+                input.max = config.max;
+                input.step = config.step;
+            } else { // For number input
+                wrapper.appendChild(label);
+                input.className = 'w-full mt-2 bg-slate-800 border border-[var(--border-color)] rounded-md px-3 py-2 text-white focus:ring-[var(--accent-blue-light)] focus:border-[var(--accent-blue-light)]';
+            }
+            
+            wrapper.appendChild(input);
+            inputContainer.appendChild(wrapper);
+        });
+        
+        // --- MAIN CALCULATION LOGIC ---
+        function calculatePension() {
+            // Helper to format numbers
+            const formatCurrency = (value) => new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
+            const formatNumber = (value) => new Intl.NumberFormat('nb-NO').format(value);
+            const formatPercent = (value) => `${value.toFixed(1)} %`;
+
+            // 1. Get all input values
+            const values = {};
+            inputsConfig.forEach(config => {
+                const element = document.getElementById(config.id);
+                values[config.id] = parseFloat(element.value);
+                
+                if (config.type === 'range') {
+                    let displayValue = formatNumber(values[config.id]);
+                    if (config.unit === 'kr') displayValue = formatCurrency(values[config.id]);
+                    if (config.unit === '%') displayValue = `${values[config.id].toFixed(config.step < 1 ? 1 : 0)} %`;
+                    if (config.unit === 'år') displayValue = `${values[config.id]} år`;
+                    document.getElementById(`${config.id}-value`).textContent = displayValue;
+                }
+            });
+            
+            const G = values.grunnbelop;
+            const maxContributionBaseSalary = 12 * G;
+
+            if (values.age >= values.retirementAge) {
+                 values.age = values.retirementAge - 1;
+                 document.getElementById('age').value = values.age;
+            }
+
+            // 2. Perform main calculations
+            const n = values.retirementAge - values.age;
+            const g = values.cpiRate / 100;
+            const r = values.expectedReturn / 100;
+            const cpiFactor = 1 + g;
+
+            const futureSocialSecurity = values.socialSecurityEstimate * Math.pow(cpiFactor, n);
+            const futureSalary = values.currentSalary * Math.pow(cpiFactor, n);
+            const contributionBase = Math.min(values.currentSalary, maxContributionBaseSalary);
+            const pmt = contributionBase * (values.otpRate / 100);
+            
+            const pv = values.currentOTPSaldo;
+            const pvComponent = pv * Math.pow(1 + r, n);
+
+            let pmtComponent;
+            if (r.toFixed(5) === g.toFixed(5)) {
+                pmtComponent = pmt * n * Math.pow(1 + r, n - 1);
+            } else {
+                pmtComponent = pmt * ((Math.pow(1 + r, n) - Math.pow(1 + g, n)) / (r - g));
+            }
+            
+            const futureOTPSaldo = pvComponent + pmtComponent;
+
+            let annualOTPPayout = 0;
+            const n_payout = values.payoutYears;
+            if (r > 0) {
+                annualOTPPayout = (futureOTPSaldo * r) / (1 - Math.pow(1 + r, -n_payout));
+            } else {
+                annualOTPPayout = futureOTPSaldo / n_payout;
+            }
+            if (isNaN(annualOTPPayout)) annualOTPPayout = 0;
+
+            const totalAnnualPension = futureSocialSecurity + annualOTPPayout;
+            const pensionPercentage = futureSalary > 0 ? (totalAnnualPension / futureSalary) * 100 : 0;
+            
+            // 3. Update main UI
+            document.getElementById('years-to-retirement').textContent = formatNumber(n);
+            document.getElementById('future-salary').textContent = formatCurrency(futureSalary);
+            document.getElementById('annual-otp-saving').textContent = formatCurrency(pmt);
+            document.getElementById('future-otp-balance').textContent = formatCurrency(futureOTPSaldo);
+            document.getElementById('annual-otp-payout').textContent = formatCurrency(annualOTPPayout);
+            document.getElementById('future-social-security').textContent = formatCurrency(futureSocialSecurity);
+            
+            document.getElementById('total-annual-pension').textContent = formatCurrency(totalAnnualPension);
+            document.getElementById('pension-percentage').textContent = formatPercent(pensionPercentage);
+
+            // 4. Perform GAP calculations
+            const desiredAnnualPension = futureSalary * (values.desiredPensionLevel / 100);
+            const annualPensionGap = desiredAnnualPension - totalAnnualPension;
+
+            const goalMetMessage = document.getElementById('goal-met-message');
+            const goalResults = document.getElementById('goal-results');
+            const goalExplainer = document.getElementById('goal-explainer');
+
+            if (annualPensionGap <= 0) {
+                goalMetMessage.classList.remove('hidden');
+                goalResults.classList.add('hidden');
+                goalExplainer.classList.add('hidden');
+            } else {
+                goalMetMessage.classList.add('hidden');
+                goalResults.classList.remove('hidden');
+                goalExplainer.classList.remove('hidden');
+
+                // How much extra capital is needed at retirement to fund the gap? (PV of an annuity)
+                let requiredCapitalAtRetirement = 0;
+                if (r > 0) {
+                    requiredCapitalAtRetirement = annualPensionGap * ((1 - Math.pow(1 + r, -n_payout)) / r);
+                } else {
+                    requiredCapitalAtRetirement = annualPensionGap * n_payout;
+                }
+                
+                // What is that capital worth today? (PV of a lump sum)
+                const lumpSumToday = requiredCapitalAtRetirement / Math.pow(1 + r, n);
+
+                // Alternatively, what monthly saving is needed? (PMT for a future value)
+                let annualSavingNeeded = 0;
+                if (r > 0) {
+                     annualSavingNeeded = requiredCapitalAtRetirement / ((Math.pow(1 + r, n) - 1) / r);
+                } else {
+                    annualSavingNeeded = requiredCapitalAtRetirement / n;
+                }
+                const monthlySavingNeeded = annualSavingNeeded / 12;
+
+                document.getElementById('lump-sum-today').textContent = formatCurrency(lumpSumToday);
+                document.getElementById('monthly-saving-needed').textContent = formatCurrency(monthlySavingNeeded);
+            }
+        }
+
+        // --- EVENT LISTENERS ---
+        inputsConfig.forEach(config => {
+            document.getElementById(config.id).addEventListener('input', calculatePension);
+        });
+
+        window.addEventListener('load', calculatePension);
+        
+    </script>
+</body>
+</html>
