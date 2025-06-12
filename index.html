@@ -14,15 +14,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* Söderberg & Partners inspired theme - Updated with mixed blues */
+        /* New lighter and more comfortable blue theme */
         :root {
-            --dark-blue: #0B1B34;
-            --accent-blue-light: #89CFF0; 
+            --dark-blue: #1A2A47; /* Lighter navy background */
+            --accent-blue-light: #60A5FA; /* Softer, more accessible light blue */
             --accent-blue-vibrant: #00A9E0; 
-            --card-bg: #122642; 
+            --card-bg: #24385B; /* Lighter card background */
             --light-text: #E5E7EB;
-            --medium-text: #94A3B8;
-            --border-color: #1E3A5F;
+            --medium-text: #CBD5E1; /* Lighter secondary text */
+            --border-color: #364A6E; /* Adjusted border for new palette */
             --success-green: #4ade80;
         }
 
@@ -73,7 +73,7 @@
             font-size: 2.25rem; /* text-4xl */
             font-weight: 700;
             color: var(--accent-blue-vibrant);
-            word-break: break-all; /* Ensure long numbers wrap if absolutely necessary */
+            word-break: break-word; 
         }
         .output-label {
             font-size: 1rem; /* text-base */
@@ -83,75 +83,75 @@
 </head>
 <body class="antialiased">
 
-    <div class="relative min-h-screen flex flex-col items-center justify-center p-4">
-        <div class="w-full max-w-6xl mx-auto bg-slate-900/70 backdrop-blur-sm rounded-2xl shadow-2xl p-6 md:p-10">
+    <div class="relative min-h-screen flex flex-col items-center justify-center p-4 lg:p-8">
+        <div class="w-full max-w-7xl mx-auto">
             
             <header class="text-center mb-8">
                 <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">Pensjonsdashboard</h1>
                 <p class="text-slate-400">Estimer din fremtidige pensjon interaktivt</p>
             </header>
 
-            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                <!-- Input Section -->
-                <div class="lg:col-span-2 space-y-6 bg-[var(--card-bg)] p-6 rounded-xl">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Column 1: Input Section -->
+                <div class="space-y-6 bg-[var(--card-bg)] p-6 rounded-xl">
                     <h2 class="text-2xl font-semibold text-white border-b border-[var(--border-color)] pb-2">Input</h2>
                     <div id="input-container" class="space-y-5"></div>
                 </div>
 
-                <!-- Output Section -->
-                <div class="lg:col-span-3 flex flex-col gap-8">
-                    <div class="space-y-6 bg-[var(--card-bg)] p-6 rounded-xl">
-                        <div>
-                           <h2 class="text-2xl font-semibold text-white border-b border-[var(--border-color)] pb-2 mb-6">Resultater</h2>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
-                                <div class="bg-slate-900/80 p-6 rounded-lg flex flex-col justify-center">
-                                    <div id="total-annual-pension" class="output-value">0 kr</div>
-                                    <div class="output-label mt-2">Årlig pensjon (estimat)</div>
-                                </div>
-                                <div class="bg-slate-900/80 p-6 rounded-lg flex flex-col justify-center">
-                                    <div id="pension-percentage" class="output-value">0 %</div>
-                                    <div class="output-label mt-2">% av sluttlønn</div>
-                                </div>
+                <!-- Column 2: Results Section -->
+                <div class="space-y-6 bg-[var(--card-bg)] p-6 rounded-xl">
+                    <div>
+                       <h2 class="text-2xl font-semibold text-white border-b border-[var(--border-color)] pb-2 mb-6">Resultater</h2>
+                        <div class="grid grid-cols-1 gap-6 text-center">
+                            <div class="bg-slate-900/80 p-6 rounded-lg flex flex-col justify-center">
+                                <div id="total-annual-pension" class="output-value">0 kr</div>
+                                <div class="output-label mt-2">Årlig pensjon (estimat)</div>
                             </div>
-                        </div>
-                        
-                        <div class="mt-6 space-y-4">
-                            <h3 class="text-xl font-medium text-white">Detaljert oversikt</h3>
-                            <div class="bg-slate-900/80 p-4 rounded-lg space-y-3">
-                                <div class="flex justify-between items-center text-slate-300">
-                                    <span>År til pensjonsalder:</span>
-                                    <span id="years-to-retirement" class="font-semibold text-white">0</span>
-                                </div>
-                                <hr class="border-[var(--border-color)]">
-                                <div class="flex justify-between items-center text-slate-300">
-                                    <span>Sluttlønn (estimat):</span>
-                                    <span id="future-salary" class="font-semibold text-white">0 kr</span>
-                                </div>
-                                 <hr class="border-[var(--border-color)]">
-                                <div class="flex justify-between items-center text-slate-300">
-                                    <span>Årlig sparing (OTP) i dag:</span>
-                                    <span id="annual-otp-saving" class="font-semibold text-white">0 kr</span>
-                                </div>
-                                 <hr class="border-[var(--border-color)]">
-                                <div class="flex justify-between items-center text-slate-300">
-                                    <span>OTP saldo ved pensjon:</span>
-                                    <span id="future-otp-balance" class="font-semibold text-white">0 kr</span>
-                                </div>
-                                 <hr class="border-[var(--border-color)]">
-                                 <div class="flex justify-between items-center text-slate-300">
-                                    <span>Årlig utbetaling fra OTP:</span>
-                                    <span id="annual-otp-payout" class="font-semibold text-white">0 kr</span>
-                                </div>
-                                <hr class="border-[var(--border-color)]">
-                                <div class="flex justify-between items-center text-slate-300">
-                                    <span>Årlig utbetaling fra Folketrygden:</span>
-                                    <span id="future-social-security" class="font-semibold text-white">0 kr</span>
-                                </div>
+                            <div class="bg-slate-900/80 p-6 rounded-lg flex flex-col justify-center">
+                                <div id="pension-percentage" class="output-value">0 %</div>
+                                <div class="output-label mt-2">% av sluttlønn</div>
                             </div>
                         </div>
                     </div>
+                    
+                    <div class="mt-6 space-y-4">
+                        <h3 class="text-xl font-medium text-white">Detaljert oversikt</h3>
+                        <div class="bg-slate-900/80 p-4 rounded-lg space-y-3">
+                            <div class="flex justify-between items-center text-slate-300">
+                                <span>År til pensjonsalder:</span>
+                                <span id="years-to-retirement" class="font-semibold text-white">0</span>
+                            </div>
+                            <hr class="border-[var(--border-color)]">
+                            <div class="flex justify-between items-center text-slate-300">
+                                <span>Sluttlønn (estimat):</span>
+                                <span id="future-salary" class="font-semibold text-white">0 kr</span>
+                            </div>
+                             <hr class="border-[var(--border-color)]">
+                            <div class="flex justify-between items-center text-slate-300">
+                                <span>Årlig sparing (OTP) i dag:</span>
+                                <span id="annual-otp-saving" class="font-semibold text-white">0 kr</span>
+                            </div>
+                             <hr class="border-[var(--border-color)]">
+                            <div class="flex justify-between items-center text-slate-300">
+                                <span>OTP saldo ved pensjon:</span>
+                                <span id="future-otp-balance" class="font-semibold text-white">0 kr</span>
+                            </div>
+                             <hr class="border-[var(--border-color)]">
+                             <div class="flex justify-between items-center text-slate-300">
+                                <span>Årlig utbetaling fra OTP:</span>
+                                <span id="annual-otp-payout" class="font-semibold text-white">0 kr</span>
+                            </div>
+                            <hr class="border-[var(--border-color)]">
+                            <div class="flex justify-between items-center text-slate-300">
+                                <span>Årlig utbetaling fra Folketrygden:</span>
+                                <span id="future-social-security" class="font-semibold text-white">0 kr</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                    <!-- PENSION GAP SECTION -->
+                <!-- Column 3: Gap Section -->
+                <div class="flex flex-col gap-8">
                     <div class="space-y-6 bg-[var(--card-bg)] p-6 rounded-xl">
                         <h2 class="text-2xl font-semibold text-white border-b border-[var(--border-color)] pb-2">Pensjonsgap</h2>
                         <div id="gap-calculation-output">
@@ -159,13 +159,12 @@
                                 Gratulerer, du har allerede nådd pensjonsmålet ditt!
                             </div>
                             
-                            <!-- NEW GAP SUMMARY FIELD -->
                             <div id="pension-gap-summary" class="hidden bg-slate-800/60 p-4 rounded-lg text-center mb-6">
                                 <div class="output-label">Ditt årlige pensjonsgap</div>
                                 <div id="pension-gap-details" class="text-xl font-bold text-[var(--accent-blue-light)] mt-1">0,0 % (0 kr / år)</div>
                             </div>
 
-                            <div id="goal-results" class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
+                            <div id="goal-results" class="grid grid-cols-1 gap-6 text-center">
                                 <div class="bg-slate-900/80 p-6 rounded-lg flex flex-col justify-center">
                                     <div id="lump-sum-today" class="output-value">0 kr</div>
                                     <div class="output-label mt-2">Nødvendig engangsinnskudd i dag</div>
@@ -198,7 +197,7 @@
             { id: 'socialSecurityEstimate', label: 'Årlig utbetaling Folketrygden (fra norskpensjon.no)', type: 'range', min: 150000, max: 500000, step: 5000, value: 250000, unit: 'kr' },
             { id: 'desiredPensionLevel', label: 'Ønsket pensjonsnivå', type: 'range', min: 40, max: 100, step: 1, value: 80, unit: '%' }
         ];
-
+        
         const inputContainer = document.getElementById('input-container');
 
         // --- DYNAMICALLY CREATE INPUT FIELDS ---
@@ -238,12 +237,13 @@
             inputContainer.appendChild(wrapper);
         });
         
+        // Helper function to format numbers
+        const formatCurrency = (value) => new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
+        const formatNumber = (value) => new Intl.NumberFormat('nb-NO').format(value);
+        const formatPercent = (value) => `${value.toFixed(1)} %`;
+
         // --- MAIN CALCULATION LOGIC ---
         function calculatePension() {
-            // Helper to format numbers
-            const formatCurrency = (value) => new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
-            const formatNumber = (value) => new Intl.NumberFormat('nb-NO').format(value);
-            const formatPercent = (value) => `${value.toFixed(1)} %`;
 
             // 1. Get all input values
             const values = {};
@@ -363,7 +363,6 @@
         inputsConfig.forEach(config => {
             document.getElementById(config.id).addEventListener('input', calculatePension);
         });
-
         window.addEventListener('load', calculatePension);
         
     </script>
